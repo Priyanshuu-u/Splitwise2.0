@@ -1,4 +1,5 @@
 import express from 'express';
+import upload from '../utils/upload.js';
 import {
   addExpense,
   getExpenses,
@@ -10,7 +11,14 @@ import { authenticateJWT } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// All routes are protected
+// With receipt upload & ML integration
+router.post(
+  "/upload",
+  authenticateJWT,
+  upload.single("receipt"),
+  addExpense // controller will handle ML
+);
+
 router.post('/', authenticateJWT, addExpense);
 router.get('/', authenticateJWT, getExpenses);
 router.get('/:id', authenticateJWT, getExpenseById);

@@ -1,20 +1,38 @@
 import Expense from '../models/Expense.js';
-import Household from '../models/Household.js';
+import axios from 'axios';
+import path from 'path';
+import fs from 'fs';
+import FormData from 'form-data';
 
 export const addExpense = async (req, res) => {
   try {
-    const { description, amount, category, paidBy, household, involved, receiptUrl, aiData } = req.body;
-    // Optionally: Validate that household and involved users exist
+    let { description, amount, category, paidBy, household, involved } = req.body;
+    let receiptUrl = req.file ? req.file.path : undefined;
+    let aiData = {};
+
+    if (req.file) {
+      const formData = new FormData();
+      formData.append("file", fs.createReadStream(req.file.path));
+      const mlRes = await axios.post("http://localhost:8000/ocr", formData, {
+        headers: formData.getHeaders(),
+      });
+      aiData = mlRes.data;
+      description = aiData.ocr?.description || description;
+      amount = aiData.ocr?.amount || amount;
+      category = aiData.classification || category;
+    }
+
     const expense = await Expense.create({
       description,
       amount,
       category,
-      paidBy,
+      paidBy: paidBy || req.user.id,
       household,
-      involved,
+      involved: involved || [req.user.id],
       receiptUrl,
       aiData
     });
+
     res.status(201).json(expense);
   } catch (err) {
     res.status(500).json({ message: err.message });
