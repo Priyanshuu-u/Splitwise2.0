@@ -7,8 +7,8 @@ import authRoutes from './routes/authRoutes.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import householdRoutes from './routes/householdRoutes.js';
 import session from 'express-session';
-import passport from 'passport';
-import './config/passport.js';
+
+import passport from './config/passport.js';
 
 dotenv.config();
 connectDB();

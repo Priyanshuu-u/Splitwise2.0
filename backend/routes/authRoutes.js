@@ -7,7 +7,12 @@ const router = express.Router();
 router.post('/register', register);
 router.post('/login', login);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
+router.get('/me', passport.authenticate('jwt', { session: false }), (req, res) => {
+  res.json(req.user);
+});
+router.post('/households', passport.authenticate('jwt', { session: false }), (req, res) => {
+  // ...
+});
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/login', session: false }),
   (req, res) => {

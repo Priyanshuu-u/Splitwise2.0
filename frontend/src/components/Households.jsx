@@ -1,54 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import { FaPlus, FaUsers } from "react-icons/fa";
 
-export default function Households({ selected, onSelect }) {
-  const [households, setHouseholds] = useState([]);
-  const [name, setName] = useState('');
-  const [msg, setMsg] = useState('');
-
-  useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API}/households`)
-      .then(res => setHouseholds(res.data))
-      .catch(() => setHouseholds([]));
-  }, []);
+export default function Households({ households, setHouseholds, selected, onSelect }) {
+  const [showForm, setShowForm] = useState(false);
+  const [name, setName] = useState("");
+  const [msg, setMsg] = useState("");
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    setMsg("");
     if (!name.trim()) return;
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API}/households`, { name });
-      setHouseholds([...households, res.data]);
-      setName('');
-      setMsg('Created!');
+      // You might need to update this endpoint if your API differs
+      const res = await fetch(`${import.meta.env.VITE_API}/households`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Could not create household");
+      const newHh = await res.json();
+      setHouseholds((prev) => [...prev, newHh]);
+      setName("");
+      setShowForm(false);
+      setMsg("Created!");
     } catch {
-      setMsg('Could not create household.');
+      setMsg("Failed to create household.");
     }
   };
 
   return (
-    <div className="border p-3 rounded mb-4 bg-white">
-      <h3 className="font-bold">Your Households</h3>
-      <ul className="my-2">
-        {households.map(hh => (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <span className="font-semibold text-lg text-purple-700 flex items-center gap-2">
+          <FaUsers /> Households
+        </span>
+        <button
+          className="flex items-center gap-1 bg-gradient-to-br from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full shadow hover:scale-105 transition"
+          onClick={() => setShowForm((v) => !v)}
+        >
+          <FaPlus />
+          <span className="text-sm">{showForm ? "Cancel" : "Create"}</span>
+        </button>
+      </div>
+      {showForm && (
+        <form onSubmit={handleCreate} className="flex gap-2 mb-3">
+          <input
+            type="text"
+            placeholder="Household name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border p-1 rounded flex-1"
+            autoFocus
+          />
+          <button
+            type="submit"
+            className="bg-purple-600 text-white px-3 rounded"
+          >
+            Create
+          </button>
+        </form>
+      )}
+      {msg && <div className="text-xs mt-1 mb-2">{msg}</div>}
+      {households.length === 0 && <div className="text-gray-400 italic">No households yet.</div>}
+      <ul className="space-y-2">
+        {households.map((hh) => (
           <li key={hh._id}>
             <button
-              className={`p-2 w-full text-left rounded ${selected === hh._id ? 'bg-purple-200' : 'hover:bg-gray-100'}`}
+              className={`w-full text-left px-4 py-2 rounded shadow flex items-center gap-2 ${
+                selected === hh._id
+                  ? "bg-purple-200 font-bold border-l-4 border-purple-500"
+                  : "bg-white hover:bg-purple-50"
+              }`}
               onClick={() => onSelect(hh._id)}
-            >{hh.name}</button>
+            >
+              <FaUsers className="text-purple-400" />
+              <span>{hh.name}</span>
+            </button>
           </li>
         ))}
       </ul>
-      <form onSubmit={handleCreate} className="flex gap-2 mt-2">
-        <input
-          type="text"
-          placeholder="New household name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          className="border p-1 rounded flex-1"
-        />
-        <button className="bg-purple-600 text-white px-3 rounded" type="submit">Create</button>
-      </form>
-      {msg && <div className="text-xs mt-1">{msg}</div>}
     </div>
   );
 }

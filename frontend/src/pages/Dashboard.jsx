@@ -86,12 +86,12 @@ function Dashboard() {
           <h2 className="text-xl font-bold text-purple-600 mb-4 flex items-center gap-2">
             <FaHome /> Your Households
           </h2>
-          <Households
-            selected={selectedHousehold}
-            onSelect={setSelectedHousehold}
-            households={households}
-            setHouseholds={setHouseholds}
-          />
+         <Households
+  households={households}
+  setHouseholds={setHouseholds}
+  selected={selectedHousehold}
+  onSelect={setSelectedHousehold}
+/>
         </aside>
 
         {/* Main content */}
