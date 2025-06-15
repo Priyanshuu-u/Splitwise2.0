@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Set Axios header from localStorage at the very start
 const storedToken = localStorage.getItem('token');
 if (storedToken) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
@@ -10,11 +9,25 @@ if (storedToken) {
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  });
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [user, setUser] = useState(undefined); // undefined = loading, null = not logged in
+  const [token, setToken] = useState(undefined); // likewise
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+    }
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
+    }
+    setLoading(false);
+  }, []);
+
 
   useEffect(() => {
     if (token) {
@@ -41,7 +54,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+     <AuthContext.Provider value={{ user, token, loading, setUser, setToken }}>
       {children}
     </AuthContext.Provider>
   );

@@ -5,11 +5,13 @@ import CreateHousehold from "./pages/CreateHousehold";
 import Dashboard from "./pages/Dashboard";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
+
+
 function PrivateRoute({ children }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   return user ? children : <Navigate to="/login" />;
 }
-
 function App() {
   return (
     <AuthProvider>
