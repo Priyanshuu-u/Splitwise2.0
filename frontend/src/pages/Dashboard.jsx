@@ -14,7 +14,7 @@ function Dashboard() {
   const [desc, setDesc] = useState("");
   const [amt, setAmt] = useState("");
   const [msg, setMsg] = useState("");
-
+const navigate = useNavigate();
   useEffect(() => {
     if (!selectedHousehold) {
       navigate("/welcome");

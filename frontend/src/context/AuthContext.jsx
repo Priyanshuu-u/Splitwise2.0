@@ -1,16 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-const storedToken = localStorage.getItem('token');
-if (storedToken) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-}
-
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(undefined); // undefined = loading, null = not logged in
-  const [token, setToken] = useState(undefined); // likewise
+  const [user, setUser] = useState(undefined); // undefined for loading
+  const [token, setToken] = useState(undefined); // undefined for loading
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +22,6 @@ export function AuthProvider({ children }) {
     }
     setLoading(false);
   }, []);
-
 
   useEffect(() => {
     if (token) {
@@ -54,7 +48,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-     <AuthContext.Provider value={{ user, token, loading, setUser, setToken }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

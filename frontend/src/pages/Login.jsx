@@ -15,7 +15,7 @@ function Login() {
     try {
       const res = await axios.post(`${import.meta.env.VITE_API}/auth/login`, { email, password });
         login(res.data);
-  navigate('/');
+  navigate('/welcome');
     } catch (e) {
       setErr(e.response?.data?.message || 'Login failed');
     }
