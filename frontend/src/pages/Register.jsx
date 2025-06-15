@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
   const { login } = useAuth();
@@ -15,6 +16,7 @@ function Register() {
     try {
       const res = await axios.post(`${import.meta.env.VITE_API}/auth/register`, form);
       login(res.data);
+      navigate('/');
     } catch (e) {
       setErr(e.response?.data?.message || 'Registration failed');
     }

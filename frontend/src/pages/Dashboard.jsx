@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-
+import ExpenseUpload from '../components/ExpenseUpload';
 function Dashboard() {
   const { user, logout } = useAuth();
   const [households, setHouseholds] = useState([]);
@@ -57,6 +57,9 @@ function Dashboard() {
         <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Add Expense</button>
         {msg && <div className="text-green-600">{msg}</div>}
       </form>
+      <ExpenseUpload household={selectedHousehold} onAdded={() => {
+  axios.get(`${import.meta.env.VITE_API}/expenses?household=${selectedHousehold}`).then(r => setExpenses(r.data));
+}} />
       <div>
         <h3 className="font-bold">Expenses</h3>
         <ul>

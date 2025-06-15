@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
-
+    const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErr('');
     try {
       const res = await axios.post(`${import.meta.env.VITE_API}/auth/login`, { email, password });
-      login(res.data);
+        login(res.data);
+  navigate('/');
     } catch (e) {
       setErr(e.response?.data?.message || 'Login failed');
     }
