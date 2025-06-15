@@ -3,6 +3,8 @@ import authRoutes from './routes/authRoutes.js';
 import session from 'express-session';
 import passport from 'passport';
 import './config/passport.js';
+import expenseRoutes from './routes/expenseRoutes.js';
+import householdRoutes from './routes/householdRoutes.js';
 // ... other imports
 
 connectDB();
@@ -14,3 +16,5 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/households', householdRoutes);
