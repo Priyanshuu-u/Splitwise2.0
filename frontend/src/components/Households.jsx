@@ -1,33 +1,31 @@
 import React, { useState } from "react";
 import { FaPlus, FaUsers } from "react-icons/fa";
-
+import axios from "axios";
 export default function Households({ households, setHouseholds, selected, onSelect }) {
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [msg, setMsg] = useState("");
 
   const handleCreate = async (e) => {
-    e.preventDefault();
-    setMsg("");
-    if (!name.trim()) return;
-    try {
-      // You might need to update this endpoint if your API differs
-      const res = await fetch(`${import.meta.env.VITE_API}/households`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-        credentials: "include"
-      });
-      if (!res.ok) throw new Error("Could not create household");
-      const newHh = await res.json();
-      setHouseholds((prev) => [...prev, newHh]);
-      setName("");
-      setShowForm(false);
-      setMsg("Created!");
-    } catch {
-      setMsg("Failed to create household.");
-    }
-  };
+  e.preventDefault();
+  setMsg("");
+  if (!name.trim()) return;
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API}/households`,
+      { name }
+      // No need to manually set headers here;
+      // your AuthContext already sets the Authorization header for axios
+    );
+    const newHh = res.data;
+    setHouseholds((prev) => [...prev, newHh]);
+    setName("");
+    setShowForm(false);
+    setMsg("Created!");
+  } catch {
+    setMsg("Failed to create household.");
+  }
+};
 
   return (
     <div>
