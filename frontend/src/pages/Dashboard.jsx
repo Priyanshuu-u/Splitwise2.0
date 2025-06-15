@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Households from "../components/Households";
 import ExpenseUpload from "../components/ExpenseUpload";
 import { FaSignOutAlt, FaHome, FaPlus, FaReceipt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const { user, logout } = useAuth();
@@ -13,6 +14,15 @@ function Dashboard() {
   const [desc, setDesc] = useState("");
   const [amt, setAmt] = useState("");
   const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    if (!selectedHousehold) {
+      navigate("/welcome");
+      return;
+    }
+    axios.get(`${import.meta.env.VITE_API}/households`).then((r) => setHouseholds(r.data));
+    axios.get(`${import.meta.env.VITE_API}/expenses?household=${selectedHousehold}`).then((r) => setExpenses(r.data));
+  }, [selectedHousehold, navigate]);
 
   useEffect(() => {
     axios
